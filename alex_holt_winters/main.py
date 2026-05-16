@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
 
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing, Holt, ExponentialSmoothing
+from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+
 
 
 def calcul_mape(y_true, y_pred):
@@ -179,18 +182,25 @@ print("\nPrognoze:")
 print(prognoza_df)
 
 
-plt.figure(figsize=(12, 5))
-plt.plot(train, label="Train 2010-2023")
-plt.plot(test, label="Valori reale test 2024-2025")
-plt.plot(forecast_hw_mul, label="Prognoza Holt-Winters multiplicativ")
-plt.title("Prognoza ratei somajului BIM folosind Holt-Winters")
+# Cerinta 5: Interval de incredere folosind ETSModel (pentru Holt-Winters Multiplicativ)
+model_ets = ETSModel(train, error="add", trend="add", seasonal="add", seasonal_periods=12)
+fit_ets = model_ets.fit(disp=False)
+pred = fit_ets.get_prediction(start=test.index[0], end=test.index[-1])
+pred_df = pred.summary_frame(alpha=0.05) # Interval de incredere de 95%
+
+plt.figure(figsize=(12, 6))
+plt.plot(train, label="Set de Antrenare (Train: 2010-2023)", color="blue")
+plt.plot(test, label="Set de Validare (Test: 2024-2025)", color="green")
+plt.plot(pred_df['mean'], label="Prognoza Punctuala (Holt-Winters)", color="red", linestyle="--")
+plt.fill_between(pred_df.index, pred_df['pi_lower'], pred_df['pi_upper'], color='pink', alpha=0.3, label="Interval de Incredere 95%")
+plt.title("Cerinta 5: Prognoza ratei somajului BIM - Holt-Winters")
 plt.xlabel("An")
 plt.ylabel("Rata somajului BIM (%)")
 plt.legend()
-plt.grid(True)
+plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.savefig("grafic_holt_winters_prognoza.png", dpi=300)
-plt.show()
+
 
 
 plt.figure(figsize=(12, 5))
