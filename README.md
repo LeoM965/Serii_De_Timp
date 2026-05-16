@@ -84,6 +84,35 @@ Se observă cum incertitudinea crește liniar cu timpul, specific proceselor int
 
 ---
 
+## 📅 4. Modulul SARIMA (Serii Nestaționare cu Sezonalitate)
+Conform Capitolului 4, când seria de timp prezintă variații periodice care se repetă (ex: tipar anual de 12 luni), abordarea Box-Jenkins este extinsă la modelul **SARIMA(p,d,q)x(P,D,Q)s**.
+
+### Metodologie:
+1. **Transformarea Datelor**: S-a aplicat logaritmarea pentru a stabiliza varianța (corectarea sezonalității multiplicative).
+2. **Diferențierea Sezonieră și Ordinară**: Am aplicat o primă diferență (`d=1`) pentru eliminarea trendului și o diferență sezonieră (`D=1`, `s=12`) pentru a elimina tiparul anual.
+3. **Identificare ACF/PACF**: Analiza corelogramelor dublu diferențiate pentru sugerarea componentelor $MA$ și $SMA$.
+4. **Validarea Modelului și Corecția de Bias**: S-au comparat modele (ex. Airline) prin AIC, obținându-se optimul **SARIMA(1, 1, 1)x(0, 1, 1)12**. La final, previziunile au fost aduse din baza logaritmică înapoi la valorile inițiale (cu corecție de bias: $e^{y + \sigma^2/2}$).
+
+### Vizualizări SARIMA:
+**Transformare și Diferențiere (Seria Devine Zgomot):**
+Trecerea din seria nivel → stabilizarea varianței (log) → seria staționară (după diferențierea obisnuita si sezoniera).
+![Diferentieri SARIMA](sarima_analysis/rezultate/sarima_diferentieri.png)
+
+**ACF și PACF (Seria Dublu Diferențiată):**
+![ACF PACF SARIMA](sarima_analysis/rezultate/sarima_acf_pacf.png)
+
+**Diagnosticul Modelului SARIMA:**
+Se observă normalitatea distribuției reziduurilor și absența tiparelor pe corelogramă.
+![Diagnostic SARIMA](sarima_analysis/rezultate/sarima_diagnostic.png)
+
+**Prognoza Finală SARIMA:**
+Prognoza (re-adusă din baza exponențială) captează excelent variația sezonieră din anul respectiv, alături de intervalele de încredere aferente.
+![Prognoza SARIMA Finală](sarima_analysis/rezultate/sarima_prognoza_finala.png)
+
+---
+
 ## 🎯 Concluzii și Performanțe
-- Modelele ARIMA și ARMA produc erori similare pe setul de test (MAE ~0.30%).
-- Metodologia Box-Jenkins s-a dovedit a fi robustă, iar ambele abordări (staționare/nestaționare) au fost riguros documentate, testele ADF și Ljung-Box confirmând validitatea metodologiei aplicate.
+- Proiectul acoperă spectrul complet al modelării seriilor de timp clasice: de la **Neteziri Exponențiale**, la **ARMA** (serii staționare), **ARIMA** (trenduri stochastice), până la **SARIMA** (trend + sezonalitate multiplicativă).
+- Metodologia **Box-Jenkins** s-a dovedit extrem de robustă, diagnoza (testele Ljung-Box și ACF reziduale) confirmând validitatea tuturor modelelor.
+- Transformările matematice aplicate (logaritmare, diferențiere) și corecțiile de bias inverse asigură un cadru predictiv extrem de profesionist.
+
