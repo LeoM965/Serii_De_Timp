@@ -64,8 +64,12 @@ test_stationarity(serie)
 # MA: ACF se anuleaza dupa lag q
 # ARMA: Ambele scad gradual (exponential sau sinusoidal amortizat)
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
-plot_acf(serie, ax=ax1, lags=40, title='Autocorelatie (ACF) - Identificare MA(q)')
-plot_pacf(serie, ax=ax2, lags=40, title='Autocorelatie Partiala (PACF) - Identificare AR(p)')
+plot_acf(serie, ax=ax1, lags=40, title='Funcția de Autocorelație (ACF) - Identificare MA(q)')
+plot_pacf(serie, ax=ax2, lags=40, title='Funcția de Autocorelație Parțială (PACF) - Identificare AR(p)')
+ax1.set_xlabel('Lag (Întârziere)')
+ax1.set_ylabel('Corelație')
+ax2.set_xlabel('Lag (Întârziere)')
+ax2.set_ylabel('Corelație Parțială')
 plt.tight_layout()
 plt.savefig("rezultate/acf_pacf_identificare.png", dpi=300)
 
@@ -95,7 +99,42 @@ print(f"Cel mai bun model ARMA gasit: ARMA({best_order[0]}, {best_order[2]}) cu 
 # 5. Diagnosticul Modelului (Verificarea reziduurilor conform slide-urilor)
 # Reziduurile trebuie sa fie Zgomot Alb (White Noise)
 print("\n--- Diagnosticul Reziduurilor (Verificare Box-Jenkins) ---")
-best_model_fit.plot_diagnostics(figsize=(12, 10))
+
+# Recreăm manual graficele de diagnostic pentru a avea titluri în Română
+fig = plt.figure(figsize=(12, 10))
+
+# 1. Reziduuri în timp
+ax1 = fig.add_subplot(221)
+ax1.plot(best_model_fit.resid)
+ax1.set_title('Reziduuri Standardizate')
+ax1.axhline(0, color='black', linestyle='--', linewidth=1)
+
+# 2. Histogramă + Densitate
+ax2 = fig.add_subplot(222)
+ax2.hist(best_model_fit.resid, bins=20, density=True, alpha=0.6, color='g')
+# Adăugăm curba normală teoretică pentru referință
+xmin, xmax = ax2.get_xlim()
+x = np.linspace(xmin, xmax, 100)
+mu = np.mean(best_model_fit.resid)
+sigma = np.std(best_model_fit.resid)
+p = (1 / (sigma * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mu) / sigma)**2)
+ax2.plot(x, p, 'k', linewidth=2, label='Normală')
+ax2.set_title('Histogramă și Densitate')
+ax2.set_xlabel('Eroare')
+ax2.set_ylabel('Densitate')
+
+# 3. Normal Q-Q Plot
+ax3 = fig.add_subplot(223)
+sm.graphics.qqplot(best_model_fit.resid, line='s', ax=ax3)
+ax3.set_title('Grafic Normal Q-Q')
+ax3.set_xlabel('Cuantile Teoretice')
+ax3.set_ylabel('Cuantile Eșantion')
+
+# 4. Corelograma reziduurilor
+ax4 = fig.add_subplot(224)
+plot_acf(best_model_fit.resid, ax=ax4, title='Corelograma Reziduurilor (ACF)')
+ax4.set_xlabel('Lag')
+
 plt.tight_layout()
 plt.savefig("rezultate/diagnostic_model_arma.png", dpi=300)
 
@@ -132,16 +171,16 @@ confidence_intervals = forecast_res.conf_int()
 
 # 7. Vizualizare Rezultate Finale
 plt.figure(figsize=(12, 6))
-plt.plot(train.index, train, label="Date Antrenare", color="blue")
-plt.plot(test.index, test, label="Date Reale (Test)", color="green", alpha=0.6)
-plt.plot(forecast_mean.index, forecast_mean, label=f"Prognoza ARIMA{best_order}", color="red", linestyle="--")
+plt.plot(train.index, train, label="Date Antrenare (Istoric)", color="blue")
+plt.plot(test.index, test, label="Date Reale (Validare)", color="green", alpha=0.6)
+plt.plot(forecast_mean.index, forecast_mean, label=f"Prognoza ARMA({best_order[0]}, {best_order[2]})", color="red", linestyle="--")
 plt.fill_between(confidence_intervals.index, 
                  confidence_intervals.iloc[:, 0], 
-                 confidence_intervals.iloc[:, 1], color='pink', alpha=0.3, label="Interval Incredere 95%")
+                 confidence_intervals.iloc[:, 1], color='pink', alpha=0.3, label="Interval de Încredere 95%")
 
-plt.title(f"Prognoza Serii de Timp - Model ARIMA{best_order}")
-plt.xlabel("An")
-plt.ylabel("Valoare")
+plt.title(f"Prognoza Serii de Timp - Model ARMA({best_order[0]}, {best_order[2]})")
+plt.xlabel("Anul")
+plt.ylabel("Rata Șomajului BIM (%)")
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
