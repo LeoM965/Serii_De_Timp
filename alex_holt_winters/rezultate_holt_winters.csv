@@ -1,0 +1,5 @@
+Model,MAE,RMSE,MAPE
+Simple Exponential Smoothing,0.3626,0.4729,6.6637
+Holt,0.5201,0.5871,9.1086
+Holt-Winters aditiv,0.5017,0.5544,8.7077
+Holt-Winters multiplicativ,0.3698,0.4323,6.6109
