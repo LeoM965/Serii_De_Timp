@@ -1,0 +1,25 @@
+REZULTATELE TESTULUI DE STATIONARITATE (ADF)
+=============================================
+
+--- Testul ADF pentru: Somaj (La Nivel) ---
+Statistica ADF: -1.4013
+P-value: 0.5817
+Concluzie: Nu putem respinge ipoteza nula. Seria are un TREND STOCHASTIC (Non-Stationara).
+
+--- Testul ADF pentru: Inflatie IPC (La Nivel) ---
+Statistica ADF: -2.7667
+P-value: 0.0632
+Concluzie: Nu putem respinge ipoteza nula. Seria are un TREND STOCHASTIC (Non-Stationara).
+
+>>> Aplicam diferentierea de ordinul 1... <<<
+
+--- Testul ADF pentru: Somaj (Diferentiat - Ordinul 1) ---
+Statistica ADF: -7.2642
+P-value: 0.0000
+Concluzie: Respingem ipoteza nula. Seria ESTE STATIONARA (I(0)).
+
+--- Testul ADF pentru: Inflatie IPC (Diferentiat - Ordinul 1) ---
+Statistica ADF: -12.1544
+P-value: 0.0000
+Concluzie: Respingem ipoteza nula. Seria ESTE STATIONARA (I(0)).
+
