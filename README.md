@@ -106,13 +106,37 @@ Se observă normalitatea distribuției reziduurilor și absența tiparelor pe co
 ![Diagnostic SARIMA](sarima_analysis/rezultate/sarima_diagnostic.png)
 
 **Prognoza Finală SARIMA:**
-Prognoza (re-adusă din baza exponențială) captează excelent variația sezonieră din anul respectiv, alături de intervalele de încredere aferente.
+Prognoza (re-adusă din baza exponențială) captează excelent variația sezonieră din anul respectiv, alături de intervalele de încredere aferente. Erorile de prognoză out-of-sample pentru setul de test (2024) sunt:
+- **MAE**: 0.3328
+- **RMSE**: 0.3479
+- **MAPE**: 5.43%
 ![Prognoza SARIMA Finală](sarima_analysis/rezultate/sarima_prognoza_finala.png)
+
 
 ---
 
-## 🎯 Concluzii și Performanțe
+## 🏆 5. Cerința 6: Compararea Metodelor Univariate de Prognoză
+Acest modul (`comparatie_modele/`) consolidează erorile out-of-sample (pe setul de test) obținute de modelele univariate implementate, cu scopul de a determina care abordare are cea mai mare acuratețe de prognoză pentru rata șomajului.
+
+**Tabelul Performanțelor (Ordonat după RMSE):**
+| Model | MAE | RMSE | MAPE |
+| :--- | :--- | :--- | :--- |
+| **SARIMA(1, 1, 1)x(0, 1, 1)12** | **0.3328** | **0.3479** | **5.43%** |
+| Holt-Winters (Multiplicativ) | 0.3698 | 0.4323 | 6.61% |
+| Simple Exponential Smoothing | 0.3626 | 0.4729 | 6.66% |
+| Holt-Winters (Aditiv) | 0.5017 | 0.5544 | 8.70% |
+| Holt (Trend Liniar) | 0.5201 | 0.5871 | 9.10% |
+
+**Vizualizarea Comparativă a Erorilor:**
+![Comparatie Modele](comparatie_modele/grafic_comparatie_modele.png)
+
+### Interpretarea Rezultatelor (Răspuns Cerința 6):
+Comparând acuratețea metodelor univariate, se observă clar superioritatea modelului **SARIMA**. Deși *Holt-Winters Multiplicativ* reușește să capteze sezonalitatea și obține o eroare relativ mică, metodologia riguroasă Box-Jenkins din SARIMA, care implică stabilizarea varianței (prin transformare logaritmică) și diferențierea multiplă (ordinară + sezonieră), produce prognoze semnificativ mai precise pe setul de test (MAPE de 5.43% față de 6.61% la HW). Modelele care ignoră sezonalitatea (SES și Holt clasic) obțin cele mai slabe performanțe, subliniind natura sezonieră a șomajului în România.
+
+---
+
+## 🎯 Concluzii și Performanțe Finale
 - Proiectul acoperă spectrul complet al modelării seriilor de timp clasice: de la **Neteziri Exponențiale**, la **ARMA** (serii staționare), **ARIMA** (trenduri stochastice), până la **SARIMA** (trend + sezonalitate multiplicativă).
 - Metodologia **Box-Jenkins** s-a dovedit extrem de robustă, diagnoza (testele Ljung-Box și ACF reziduale) confirmând validitatea tuturor modelelor.
-- Transformările matematice aplicate (logaritmare, diferențiere) și corecțiile de bias inverse asigură un cadru predictiv extrem de profesionist.
+- Transformările matematice aplicate (logaritmare, diferențiere) și compararea finală a erorilor asigură un cadru predictiv extrem de profesionist.
 
