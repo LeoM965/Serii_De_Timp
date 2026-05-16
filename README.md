@@ -135,8 +135,30 @@ Comparând acuratețea metodelor univariate, se observă clar superioritatea mod
 
 ---
 
+---
+
+## 🔗 6. Cerința 7: Analiza Multivariată (Inflație vs. Șomaj)
+Acest modul (`04_Analiza_Multivariata_VAR/`) extinde proiectul dincolo de seriile univariate, explorând relația macroeconomică dintre **Rata Inflației** și **Rata Șomajului** în România (Curba Phillips) folosind metodologia **Vector Autoregression (VAR)**.
+
+### Etape și Rezultate:
+1. **Testul de Cointegrare Johansen**:
+   - Statistica Trace (4.13) a fost sub valoarea critică la 95% (12.32).
+   - **Concluzie**: Nu există o relație de cointegrare (echilibru pe termen lung) între cele două variabile. Prin urmare, estimarea unui model VAR pe datele diferențiate este abordarea corectă, în detrimentul unui VECM.
+2. **Selecția Lag-ului Optim (VAR)**:
+   - Pe baza criteriului informațional Akaike (AIC), a fost selectat un lag optim de **5 luni** pentru modelul VAR.
+3. **Cauzalitatea Granger (Cauzează o variabilă pe cealaltă?)**:
+   - *Inflația $\rightarrow$ Șomaj*: p-value = 0.747 > 0.05. Inflația NU cauzează (în sens Granger) șomajul.
+   - *Șomaj $\rightarrow$ Inflație*: p-value = 0.043 < 0.05. **Șomajul cauzează Granger Inflația!** Aceasta este o descoperire empirică interesantă: dinamica pieței muncii din România anticipează / produce șocuri în dinamica prețurilor.
+4. **Funcția de Răspuns la Impuls (IRF) & Descompunerea Varianței (FEVD)**:
+   - S-a modelat răspunsul sistemului la un șoc structural (descompunere Cholesky) pe un orizont de 12 luni.
+   ![Impulse Response Function](04_Analiza_Multivariata_VAR/rezultate/var_irf.png)
+   ![Variance Decomposition](04_Analiza_Multivariata_VAR/rezultate/var_fevd.png)
+
+---
+
 ## 🎯 Concluzii și Performanțe Finale
-- Proiectul acoperă spectrul complet al modelării seriilor de timp clasice: de la **Neteziri Exponențiale**, la **ARMA** (serii staționare), **ARIMA** (trenduri stochastice), până la **SARIMA** (trend + sezonalitate multiplicativă).
-- Metodologia **Box-Jenkins** s-a dovedit extrem de robustă, diagnoza (testele Ljung-Box și ACF reziduale) confirmând validitatea tuturor modelelor.
-- Transformările matematice aplicate (logaritmare, diferențiere) și compararea finală a erorilor asigură un cadru predictiv extrem de profesionist.
+- Proiectul acoperă spectrul complet al modelării seriilor de timp clasice: de la **Neteziri Exponențiale**, la **ARMA** (serii staționare), **ARIMA** (trenduri stochastice), **SARIMA** (sezonalitate) și modelare **Multivariată VAR/Granger**.
+- Metodologia **Box-Jenkins** s-a dovedit extrem de robustă, modelul SARIMA obținând cele mai bune performanțe predictive (RMSE: 0.34).
+- Analiza multivariată aduce o nuanță importantă asupra Curbei Phillips în România: deși nu există o relație pe termen lung, piața muncii joacă un rol activ în formarea presiunilor inflaționiste pe termen scurt.
+
 

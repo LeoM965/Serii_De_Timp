@@ -1,9 +1,14 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
 from statsmodels.tsa.vector_ar.vecm import coint_johansen
 from statsmodels.tsa.api import VAR
 from statsmodels.tsa.stattools import grangercausalitytests
+
+os.makedirs("rezultate", exist_ok=True)
+
 
 df = pd.read_csv("date_unite.csv")
 df.columns = df.columns.str.strip()
@@ -42,7 +47,7 @@ df.set_index("Data", inplace=True)
 df.index.freq = "MS"
 
 # Verificăm rezultatul
-print("Datele au fost încărcate cu succes:")
+print("Datele au fost incarcate cu succes:")
 print(df.head())
 
 print("--- TESTUL DE COINTEGRARE JOHANSEN ---")
@@ -74,11 +79,11 @@ print(rezultate_var.summary())
 
 print("\n--- TESTUL DE CAUZALITATE GRANGER ---")
 # Testăm dacă Inflația cauzează Șomajul
-print("Cauzalitate: Inflația -> Șomaj")
+print("Cauzalitate: Inflatia -> Somaj")
 granger_1 = grangercausalitytests(df_diff[['Somaj', 'Inflatie']], maxlag=[lag_optim])
 
 # Testăm dacă Șomajul cauzează Inflația
-print("\nCauzalitate: Șomaj -> Inflație")
+print("\nCauzalitate: Somaj -> Inflatie")
 granger_2 = grangercausalitytests(df_diff[['Inflatie', 'Somaj']], maxlag=[lag_optim])
 # Interpretare: Te uiți la p-value (ex: ssr based F test). Dacă p-value < 0.05, există cauzalitate Granger!
 
@@ -88,10 +93,14 @@ irf = rezultate_var.irf(12)
 # Plotăm IRF
 fig_irf = irf.plot(orth=True) # orth=True folosește descompunerea Cholesky (standard în macro)
 plt.suptitle('Funcția de Răspuns la Impuls (IRF)', fontsize=14, y=1.05)
-plt.show()
+plt.tight_layout()
+plt.savefig("rezultate/var_irf.png", dpi=300)
+
 
 # Generăm și plotăm Descompunerea Varianței (FEVD)
 fevd = rezultate_var.fevd(12)
 fig_fevd = fevd.plot()
 plt.suptitle('Descompunerea Varianței', fontsize=14, y=1.05)
-plt.show()
+plt.tight_layout()
+plt.savefig("rezultate/var_fevd.png", dpi=300)
+print("\n--- Analiza Multivariata Finalizata cu Succes! Graficele au fost salvate. ---")
